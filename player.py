@@ -1,125 +1,223 @@
 """
-FICHIER : MAIN
-PROJET : "A coup d'pelle !" 
-NOMS :TADDEI Louis, FRANCOIS Zoé, GORMOND Cédric
+Ce fichier gère toutes les fonctions et la gestion des images du personnage.
+A CORRIGER:
+Bug des sprites au niveau des sauts
+Utiliser des sprites plus petites
 
-Ce fichier est le 'coeur' principal du programme. Pour lancer le jeu, il faut executer ce fichier.
-
-DESCRIPTION DU FICHIER:
-Importation de plusieurs fichiers.py
-Comporte une fonction main() qui contient toutes les initialisations et la boucle
-permettant de faire tourner le jeu. Cette boucle ressence toutes les commandes entrées
-et par l'utilisateur. Tout au long de la boucle, on fait appel à plusieurs fichier et 
-à plusieurs fonctions propres au module pygame.
+A FAIRE:
+Utiliser des attaques avec appuyant sur une touche (utilisation sprites + animation) 
 
 """
-#Importation des modules
 import pygame
+
 import constants
-import levels
-from player import Player # importation du fichier plyer en tant que Player
 
-def main():
-    """ Main Program """
-    pygame.init()
+from platforms import MovingPlatform
+from spritesheet_functions import SpriteSheet
 
-    #Défini les dimensions
-    size = [constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT] #[nom_du_fichier.VARIABLE]
-    screen = pygame.display.set_mode(size)
+class Player(pygame.sprite.Sprite):
+    """ This class represents the bar at the bottom that the player
+    controls. """
 
-    #Titre de la fenetre
-    pygame.display.set_caption("Platformer prototype")
+    # -- Attributes
+    # Set speed vector of player
+    change_x = 0
+    change_y = 0
 
-    # Créer le joueur en important le fichier (voir importations)
-    player = Player()
+    # This holds all the images for the animated walk left/right
+    # of our player
+    walking_frames_l = []
+    walking_frames_r = []
+    standing_frame = []
+    standing_frame_l = []
+    jumping_frame = []
+    jumping_frame_l = []
 
-    # Créer les niveaux (listes)
-    level_list = []
-    level_list.append(levels.Level_01(player))
-    level_list.append(levels.Level_02(player))
+    # What direction is the player facing?
+    direction = "R"
 
-    # Met en player le niveau actuel
-    current_level_no = 0
-    current_level = level_list[current_level_no]
+    # List of sprites we can bump against
+    level = None
 
-    active_sprite_list = pygame.sprite.Group()
-    player.level = current_level
+    # -- Methods
+    def __init__(self):
+        """ Constructor function """
 
-    player.rect.x = 340
-    player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
-    active_sprite_list.add(player)
+        # Call the parent's constructor
+        pygame.sprite.Sprite.__init__(self)
 
-    #Relais permettant le maintien de la boucle tant que la variable est False
-    gameExit = False
+        sprite_sheet = SpriteSheet("data/decoupage_orange.png")
 
-    # Temps du raffraichissement de l'écran (voir FPS)
-    clock = pygame.time.Clock()
+        #Standing
+        image = sprite_sheet.get_image(0,0,135,135)
+        self.standing_frame.append(image)
 
-    # -------- Programme : MAIN LOOP -----------
-    while not gameExit:
-        for event in pygame.event.get(): # Quand l'utilisation fait quelque chose
-            if event.type == pygame.QUIT: # Si il clique sur 'Fermer'
-                done = True # La variable relais prends la valeur True et permet la sortie
+        #Standing_l
+        image = sprite_sheet.get_image(0,0,135,135)
+        image = pygame.transform.flip(image, True, False)
+        self.standing_frame_l.append(image)
 
-            #Quand l'utilisateur appuie sur une touche
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.go_left()
-                if event.key == pygame.K_RIGHT:
-                    player.go_right()
-                if event.key == pygame.K_UP:
-                    player.jump()
+        # Charge toutes les images à droite
+        image = sprite_sheet.get_image(135, 0, 135, 135)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(270, 0,135, 135)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(405, 0,135, 135)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(540, 0,135, 135)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(675, 0, 135, 135)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(810, 0, 135, 135)
+        self.walking_frames_r.append(image)
 
-            #Quand l'utilisateur relâche la touche
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT and player.change_x < 0:
-                    player.stop()
-                if event.key == pygame.K_RIGHT and player.change_x > 0:
-                    player.stop()
 
-        # Update le joueur
-        active_sprite_list.update()
+        # Load all the right facing images, then flip them
+        image = sprite_sheet.get_image(135, 0, 135, 135)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(270, 0, 135, 135)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(405, 0, 135, 135)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(540, 0, 135, 135)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(675, 0, 135, 135)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(810, 0, 135, 135)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
 
-        # Affiche tous les items du niveau
-        current_level.update()
+        #Jumping
+        image = sprite_sheet.get_image(945,0,135,135)
+        self.jumping_frame.append(image)
 
-        # Mvt caméra si le joueur va à droite (ici nul)
-        if player.rect.x >= 0:
-            diff = player.rect.x - 300 # on peut mettre (constants.SCREEN_WIDTH/2)
-            player.rect.x = 300 #(constants.SCREEN_WIDTH/2)
-            current_level.shift_world(-diff)
+        #Jumping_l
+        image = sprite_sheet.get_image(945,0,135,135)
+        image = pygame.transform.flip(image, True, False)
+        self.jumping_frame_l.append(image)
 
-        # Mvt caméra si le joueur va à gauche (ici nul)
-        if player.rect.x <= 0:
-            diff = 300 - player.rect.x #(constants.SCREEN_WIDTH/2)
-            player.rect.x = 300 #(constants.SCREEN_WIDTH/2)
-            current_level.shift_world(diff)
+        # Set the image the player starts with
+        self.image = self.standing_frame[0]
 
-        # If the player gets to the end of the level, go to the next level
-        current_position = player.rect.x + current_level.world_shift
-        if current_position < current_level.level_limit:
-            player.rect.x = 120
-            if current_level_no < len(level_list)-1:
-                current_level_no += 1
-                current_level = level_list[current_level_no]
-                player.level = current_level
+        # Set a referance to the image rect.
+        self.rect = self.image.get_rect()
 
-        # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
-        current_level.draw(screen)
-        active_sprite_list.draw(screen)
+    def update(self):
+        """ Mouvements du personnage """
+        # Gravité
+        self.calc_grav()
 
-        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
+        # Mouvements avec direction
+        self.rect.x += self.change_x
+        pos = self.rect.x + self.level.world_shift
 
-        # FPS : limités à 60
-        FPS = constants.FPS
-        clock.tick(FPS)
+        #Mvt à droite
+        if self.direction == "R":
+            frame = (pos // 25) % len(self.walking_frames_r)
+            self.image = self.walking_frames_r[frame]
 
-        # Update pygame de tout se qu'on a écrit 
-        pygame.display.flip()
+        #Standing
+        elif self.direction == "S":
+            self.image = self.standing_frame[0]
 
-    # Sortie du programme
-    pygame.quit()
+        #Standing gauche
+        elif self.direction == "S_L":
+            self.image = self.standing_frame_l[0] 
+        #Saut
+        elif self.direction == "J" :
+            self.image = self.jumping_frame[0]
 
-#Lancer la boucle main()
-if __name__ == "__main__":
-    main()
+        #Stand gauche
+        elif self.direction == "J_L":
+            self.image = self.jumping_frame_l[0]
+
+        #Sinon : mvt à gauche
+        else:
+            frame = (pos // 25) % len(self.walking_frames_l)
+            self.image = self.walking_frames_l[frame]
+        
+
+        # See if we hit anything
+        block_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
+        for block in block_hit_list:
+            # If we are moving right,
+            # set our right side to the left side of the item we hit
+            if self.change_x > 0:
+                self.rect.right = block.rect.left
+            elif self.change_x < 0:
+                # Otherwise if we are moving left, do the opposite.
+                self.rect.left = block.rect.right
+
+        # Move up/down
+        self.rect.y += self.change_y
+
+        # Check and see if we hit anything
+        block_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
+        for block in block_hit_list:
+
+            # Reset our position based on the top/bottom of the object.
+            if self.change_y > 0:
+                self.rect.bottom = block.rect.top
+            elif self.change_y < 0:
+                self.rect.top = block.rect.bottom
+
+            # Stop our vertical movement
+            self.change_y = 0
+
+            if isinstance(block, MovingPlatform):
+                self.rect.x += block.change_x
+
+    def calc_grav(self):
+        """ Calculate effect of gravity. """
+        if self.change_y == 0:
+            self.change_y = 1
+        else:
+            self.change_y += .70
+
+        # See if we are on the ground.
+        if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
+            self.change_y = 0
+            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+
+    def jump(self):
+        """ Called when user hits 'jump' button. """
+
+        # move down a bit and see if there is a platform below us.
+        # Move down 2 pixels because it doesn't work well if we only move down 1
+        # when working with a platform moving down.
+        if self.direction == "R" or self.direction == "S" or self.direction == "J":
+            self.direction = "J"
+        else:
+            self.direction = "J_L"
+        self.rect.y += 3
+        platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
+        self.rect.y -= 3
+
+
+        # If it is ok to jump, set our speed upwards
+        if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
+            self.change_y = -13
+
+    # Player-controlled movement:
+    def go_left(self):
+        """ Called when the user hits the left arrow. """
+        self.change_x = -12
+        self.direction = "L"
+
+    def go_right(self):
+        """ Called when the user hits the right arrow. """
+        self.change_x = 12
+        self.direction = "R"
+
+    def stop(self):
+        """ Called when the user lets off the keyboard. """
+        self.change_x = 0
+        if self.direction == "R" or self.direction == "J":
+            self.direction = "S"
+        elif self.direction == "L" or self.direction == "J_L":
+            self.direction = "S_L"    
