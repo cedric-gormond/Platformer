@@ -1,55 +1,44 @@
 """
-Sample Python/Pygame Programs
-Simpson College Computer Science
-http://programarcadegames.com/
-http://simpson.edu/computer-science/
+FICHIER : MAIN
+PROJET : "A coup d'pelle !" 
+NOMS :TADDEI Louis, FRANCOIS Zoé, GORMOND Cédric
 
-Main module for platform scroller example.
+Ce fichier est le 'coeur' principal du programme. Pour lancer le jeu, il faut executer ce fichier.
 
-From:
-http://programarcadegames.com/python_examples/sprite_sheets/
-
-Explanation video: http://youtu.be/czBDKWJqOao
-
-Part of a series:
-http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example.py
-http://programarcadegames.com/python_examples/f.php?file=maze_runner.py
-http://programarcadegames.com/python_examples/f.php?file=platform_jumper.py
-http://programarcadegames.com/python_examples/f.php?file=platform_scroller.py
-http://programarcadegames.com/python_examples/f.php?file=platform_moving.py
-http://programarcadegames.com/python_examples/sprite_sheets/
-
-Game art from Kenney.nl:
-http://opengameart.org/content/platformer-art-deluxe
+DESCRIPTION DU FICHIER:
+Importation de plusieurs fichiers.py
+Comporte une fonction main() qui contient toutes les initialisations et la boucle
+permettant de faire tourner le jeu. Cette boucle ressence toutes les commandes entrées
+et par l'utilisateur. Tout au long de la boucle, on fait appel à plusieurs fichier et 
+à plusieurs fonctions propres au module pygame.
 
 """
-
+#Importation des modules
 import pygame
-
 import constants
 import levels
-
-from player import Player
+from player import Player # importation du fichier plyer en tant que Player
 
 def main():
     """ Main Program """
     pygame.init()
 
-    # Set the height and width of the screen
-    size = [constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT]
+    #Défini les dimensions
+    size = [constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT] #[nom_du_fichier.VARIABLE]
     screen = pygame.display.set_mode(size)
 
-    pygame.display.set_caption("Platformer with sprite sheets")
+    #Titre de la fenetre
+    pygame.display.set_caption("Platformer prototype")
 
-    # Create the player
+    # Créer le joueur en important le fichier (voir importations)
     player = Player()
 
-    # Create all the levels
+    # Créer les niveaux (listes)
     level_list = []
     level_list.append(levels.Level_01(player))
     level_list.append(levels.Level_02(player))
 
-    # Set the current level
+    # Met en player le niveau actuel
     current_level_no = 0
     current_level = level_list[current_level_no]
 
@@ -60,18 +49,19 @@ def main():
     player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
     active_sprite_list.add(player)
 
-    #Loop until the user clicks the close button.
-    done = False
+    #Relais permettant le maintien de la boucle tant que la variable est False
+    gameExit = False
 
-    # Used to manage how fast the screen updates
+    # Temps du raffraichissement de l'écran (voir FPS)
     clock = pygame.time.Clock()
 
-    # -------- Main Program Loop -----------
-    while not done:
-        for event in pygame.event.get(): # User did something
-            if event.type == pygame.QUIT: # If user clicked close
-                done = True # Flag that we are done so we exit this loop
+    # -------- Programme : MAIN LOOP -----------
+    while not gameExit:
+        for event in pygame.event.get(): # Quand l'utilisation fait quelque chose
+            if event.type == pygame.QUIT: # Si il clique sur 'Fermer'
+                gameExit = True # La variable relais prends la valeur True et permet la sortie
 
+            #Quand l'utilisateur appuie sur une touche
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     player.go_left()
@@ -80,28 +70,29 @@ def main():
                 if event.key == pygame.K_UP:
                     player.jump()
 
+            #Quand l'utilisateur relâche la touche
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT and player.change_x < 0:
                     player.stop()
                 if event.key == pygame.K_RIGHT and player.change_x > 0:
                     player.stop()
 
-        # Update the player.
+        # Update le joueur
         active_sprite_list.update()
 
-        # Update items in the level
+        # Affiche tous les items du niveau
         current_level.update()
 
-        # If the player gets near the right side, shift the world left (-x)
-        if player.rect.x >= 500:
-            diff = player.rect.x - 500
-            player.rect.x = 500
+        # Mvt caméra si le joueur va à droite (ici nul)
+        if player.rect.x >= 0:
+            diff = player.rect.x - 300 # on peut mettre (constants.SCREEN_WIDTH/2)
+            player.rect.x = 300 #(constants.SCREEN_WIDTH/2)
             current_level.shift_world(-diff)
 
-        # If the player gets near the left side, shift the world right (+x)
-        if player.rect.x <= 120:
-            diff = 120 - player.rect.x
-            player.rect.x = 120
+        # Mvt caméra si le joueur va à gauche (ici nul)
+        if player.rect.x <= 0:
+            diff = 300 - player.rect.x #(constants.SCREEN_WIDTH/2)
+            player.rect.x = 300 #(constants.SCREEN_WIDTH/2)
             current_level.shift_world(diff)
 
         # If the player gets to the end of the level, go to the next level
@@ -119,15 +110,16 @@ def main():
 
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
-        # Limit to 60 frames per second
-        clock.tick(60)
+        # FPS : limités à 60
+        FPS = constants.FPS
+        clock.tick(FPS)
 
-        # Go ahead and update the screen with what we've drawn.
+        # Update pygame de tout se qu'on a écrit 
         pygame.display.flip()
 
-    # Be IDLE friendly. If you forget this line, the program will 'hang'
-    # on exit.
+    # Sortie du programme
     pygame.quit()
 
+#Lancer la boucle main()
 if __name__ == "__main__":
     main()
