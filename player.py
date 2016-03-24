@@ -183,7 +183,15 @@ class Player(pygame.sprite.Sprite):
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
             self.change_y = 0
             self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
-
+            if self.direction == "J":
+                self.direction = "R"
+            elif self.direction == "J_L":
+                self.direction = "L"      
+            """ a modifier"""
+            elif self.direction == "J" and self.change_x == 0:
+                self.direction = "S"
+            elif self.direction == "J_L" and self.change_x == 0:
+                self.direction = "S_L"        
     def jump(self):
         """ Called when user hits 'jump' button. """
 
@@ -191,7 +199,7 @@ class Player(pygame.sprite.Sprite):
         # Move down 2 pixels because it doesn't work well if we only move down 1
         # when working with a platform moving down.
         if self.direction == "R" or self.direction == "S" or self.direction == "J":
-            self.direction = "J"
+            self.direction = "J"  
         else:
             self.direction = "J_L"
         self.rect.y += 3
@@ -220,4 +228,22 @@ class Player(pygame.sprite.Sprite):
         if self.direction == "R" or self.direction == "J":
             self.direction = "S"
         elif self.direction == "L" or self.direction == "J_L":
-            self.direction = "S_L"    
+            self.direction = "S_L"
+class Shooting(object):
+    """Class pour les tirs comportant tous"""
+
+    tir_x = 0
+    tir_y = 0
+
+    shooting_frames = []
+
+    def __init__(self):
+
+        pygame.sprite.Sprite.__init__(self)
+
+        sprite_sheet = SpriteSheet("data/tir.png")
+
+        
+        
+
+
