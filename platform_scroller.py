@@ -12,6 +12,8 @@ permettant de faire tourner le jeu. Cette boucle ressence toutes les commandes e
 et par l'utilisateur. Tout au long de la boucle, on fait appel à plusieurs fichier et 
 à plusieurs fonctions propres au module pygame.
 
+https://www.youtube.com/watch?v=Delfzyyeu80&index=48&list=PLDV1Zeh2NRsB1l23YFY137LtPcstXKyuQ
+
 """
 #Importation des modules
 import pygame
@@ -63,19 +65,29 @@ def main():
 
             #Quand l'utilisateur appuie sur une touche
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE: # Touche echap
+                    gameExit = True
                 if event.key == pygame.K_LEFT:
                     player.go_left()
                 if event.key == pygame.K_RIGHT:
                     player.go_right()
                 if event.key == pygame.K_UP:
                     player.jump()
+                if event.key == pygame.K_DOWN:
+                    player.stop()
+                if event.key == pygame.K_SPACE: #Tir
+                    player.shoot()
+                        
 
             #Quand l'utilisateur relâche la touche
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT and player.change_x < 0:
+                if event.key == pygame.K_LEFT:
                     player.stop()
-                if event.key == pygame.K_RIGHT and player.change_x > 0:
+                if event.key == pygame.K_RIGHT:
                     player.stop()
+                #elif event.key == pygame.K_UP and event.key == pygame.K_RIGHT and event.key == pygame.K_LEFT:
+                    #player.stop()
+                        
 
         # Update le joueur
         active_sprite_list.update()
@@ -84,15 +96,15 @@ def main():
         current_level.update()
 
         # Mvt caméra si le joueur va à droite (ici nul)
-        if player.rect.x >= 0:
-            diff = player.rect.x - 300 # on peut mettre (constants.SCREEN_WIDTH/2)
-            player.rect.x = 300 #(constants.SCREEN_WIDTH/2)
+        if player.rect.x >= 0: #car on veut aucun décallage (sinon on met 500)
+            diff = player.rect.x - 350 # on peut mettre (constants.SCREEN_WIDTH/2)
+            player.rect.x = 350 # milieu de l'écran
             current_level.shift_world(-diff)
 
         # Mvt caméra si le joueur va à gauche (ici nul)
         if player.rect.x <= 0:
-            diff = 300 - player.rect.x #(constants.SCREEN_WIDTH/2)
-            player.rect.x = 300 #(constants.SCREEN_WIDTH/2)
+            diff = 350 - player.rect.x #(constants.SCREEN_WIDTH/2)
+            player.rect.x = 350 #mileu de l'écran
             current_level.shift_world(diff)
 
         # If the player gets to the end of the level, go to the next level
