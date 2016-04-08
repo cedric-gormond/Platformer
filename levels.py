@@ -4,9 +4,8 @@ import constants
 import platforms
  
 class Level():
-    """ This is a generic super-class used to define a level.
-        Create a child class for each level with level-specific
-        info. """
+    """ Cette super classe definie tout le level et comporte deux 
+        classes filles définissant chaque level """
  
     def __init__(self, player):
         """ Constructor. Pass in a handle to player. Needed for when moving platforms
@@ -17,7 +16,7 @@ class Level():
         self.platform_list = None
         self.enemy_list = None
  
-        # Background image
+        # Image arrière plan
         self.background = None
  
         # How far this world has been scrolled left/right
@@ -73,48 +72,45 @@ class Level_01(Level):
         self.background.set_colorkey(constants.WHITE)
         self.level_limit = -2500
         
-        # Array with type of platform, and x, y location of the platform.
-        xp = yp = 0
         
-        level = []
+        #______CONSTRUCTION LEVEL ______
+        """ Cette partie du code construit le level
+            en y ajoutant des plaformes statiques avec
+            la méthode des 
+        """    
+
+        x_p = 0 # Pour le positionnement x des sprites 
+        y_p = 0 # Pour le positionnement y des sprites
+        
+        level = [] #Niveau final vide
+
+        # LE NIVEAU 
         level_p = [
         "PPPPPPPP",
         "P      P",]
 
-        for row in level_p:
+        # Lecture du level_P
+        for row in level_p: 
             for col in row:
                 if col == "P":
-                    level.append([platforms.GRASS_LEFT, xp, yp])
-                xp += 70    
-            yp += 70
-            xp = 0
-        """
-        level = [ [platforms.GRASS_LEFT, 500, 500],
-                  [platforms.GRASS_MIDDLE, 570, 500],
-                  [platforms.GRASS_RIGHT, 640, 500],
-                  [platforms.GRASS_LEFT, 800, 400],
-                  [platforms.GRASS_MIDDLE, 870, 400],
-                  [platforms.GRASS_RIGHT, 940, 400],
-                  [platforms.GRASS_LEFT, 1000, 500],
-                  [platforms.GRASS_MIDDLE, 1070, 500],
-                  [platforms.GRASS_RIGHT, 1140, 500],
-                  [platforms.STONE_PLATFORM_LEFT, 1120, 280],
-                  [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
-                  [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
-                  ]
-        """          
-        # Go through the array above and add platforms
+                    level.append([platforms.GRASS_LEFT, x_p, y_p])
+                x_p += 70 # Décale de la hauteur de la sprite platforme 
+            y_p += 70 # Décale de la largeur de la sprite platforme
+            x_p = 0 # Remets xp à 0   
+         
+        # Lecture de la platform
         for platform in level:
-            block = platforms.Platform(platform[0])
-            block.rect.x = platform[1]
-            block.rect.y = platform[2]
-            block.player = self.player
-            self.platform_list.add(block)
- 
-        # Add a custom moving platform
-        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE)
-        block.rect.x = 1350
-        block.rect.y = 280
+            block = platforms.Platform(platform[0]) # Nomenclature de la platforme : GRASS, STONE ...
+            block.rect.x = platform[1] # Position x de la platforme
+            block.rect.y = platform[2] # Position y de la platforme
+            block.player = self.player # Prend en compte le Player
+            self.platform_list.add(block) #Ajoute ce qui a été précèdement
+        
+        #_______PLATFORMES MOBILES______
+        # Ajoute comme pour la méthode précedante une platforme mobile
+        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE) # Nomenclature de la platforme : GRASS, STONE ...
+        block.rect.x = 1350 # Position x de la platforme
+        block.rect.y = 280 # Position y de la platforme
         block.boundary_left = 1350
         block.boundary_right = 1600
         block.change_x = 1
