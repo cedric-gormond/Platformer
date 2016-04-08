@@ -14,6 +14,8 @@ et par l'utilisateur. Tout au long de la boucle, on fait appel à plusieurs fich
 
 https://www.youtube.com/watch?v=Delfzyyeu80&index=48&list=PLDV1Zeh2NRsB1l23YFY137LtPcstXKyuQ
 
+// Essais avec un controller XBOX360
+
 """
 #Importation des modules
 import pygame
@@ -38,7 +40,6 @@ def main():
     # Créer les niveaux (listes)
     level_list = []
     level_list.append(levels.Level_01(player))
-    level_list.append(levels.Level_02(player))
 
     # Met en player le niveau actuel
     current_level_no = 0
@@ -48,16 +49,24 @@ def main():
     player.level = current_level
 
     player.rect.x = 340
-    player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
+    player.rect.y = 400
+    #player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
     active_sprite_list.add(player)
 
     #Relais permettant le maintien de la boucle tant que la variable est False
     gameExit = False
 
+    #
+    entities = pygame.sprite.Group()
+
+    #
+    platforms = []
+
     # Temps du raffraichissement de l'écran (voir FPS)
     clock = pygame.time.Clock()
 
     # -------- Programme : MAIN LOOP -----------
+    #Main    
     while not gameExit:
         for event in pygame.event.get(): # Quand l'utilisation fait quelque chose
             if event.type == pygame.QUIT: # Si il clique sur 'Fermer'
@@ -108,6 +117,7 @@ def main():
             current_level.shift_world(diff)
 
         # If the player gets to the end of the level, go to the next level
+        #mettre un mur, fin etc
         current_position = player.rect.x + current_level.world_shift
         if current_position < current_level.level_limit:
             player.rect.x = 120
