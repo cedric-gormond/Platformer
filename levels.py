@@ -4,7 +4,7 @@ import constants
 import platforms
  
 class Level():
-    """ Cette super classe definie tout le level et comporte deux 
+    """ Cette super class definie tout le level et comporte deux 
         classes filles définissant chaque level """
  
     def __init__(self, player):
@@ -26,22 +26,21 @@ class Level():
         self.enemy_list = pygame.sprite.Group()
         self.player = player
  
-    # Update everythign on this level
+    # Update tout dans le level
     def update(self):
-        """ Update everything in this level."""
+        """ Update tout """
         self.platform_list.update()
         self.enemy_list.update()
  
     def draw(self, screen):
-        """ Draw everything on this level. """
+        """ Affiche tout du level """
  
-        # Draw the background
-        # We don't shift the background as much as the sprites are shifted
-        # to give a feeling of depth.
+        # Affiche l'arrière plan
+        # On ne bouge l'arrière plan tant que les platformes n'ont pas bougées
         screen.fill(constants.BLUE)
         screen.blit(self.background,(self.world_shift // 3,0))
  
-        # Draw all the sprite lists that we have
+        # Affiche toutes les sprites (platformes) quz l'on a
         self.platform_list.draw(screen)
         self.enemy_list.draw(screen)
  
@@ -76,29 +75,42 @@ class Level_01(Level):
         #______CONSTRUCTION LEVEL ______
         """ Cette partie du code construit le level
             en y ajoutant des plaformes statiques avec
-            la méthode des 
+            la méthode "tiled"
         """    
 
-        x_p = 0 # Pour le positionnement x des sprites 
-        y_p = 0 # Pour le positionnement y des sprites
+        x_paltforme = 0 # Pour le positionnement x des sprites 
+        y_paltforme  = 0 # Pour le positionnement y des sprites
         
         level = [] #Niveau final vide
 
-        # LE NIVEAU 
-        level_p = [
-        "PPPPPPPP",
-        "P      P",]
+        # NIVEAU 1 
+        level_tiled = [
+        "                                             ",
+        "P      MR                                   P",
+        "P  PMMM                                      ",
+        "                                             ",
+        "                                             ",
+        "                                             ",
+        "                                             ",
+        "                                             ",]
 
         # Lecture du level_P
-        for row in level_p: 
+        for row in level_tiled: 
             for col in row:
-                if col == "P":
-                    level.append([platforms.GRASS_LEFT, x_p, y_p])
-                x_p += 70 # Décale de la hauteur de la sprite platforme 
-            y_p += 70 # Décale de la largeur de la sprite platforme
-            x_p = 0 # Remets xp à 0   
+                # Pour chaque lettre rencontrée, ajoute sa sprite correspondante:
+                if col == "P": 
+                    level.append([platforms.GRASS_LEFT, x_paltforme, y_paltforme])                
+                if col == "M":
+                    level. append([platforms.GRASS_MIDDLE, x_paltforme, y_paltforme])
+                if col == "R":
+                    level. append([platforms.GRASS_RIGHT, x_paltforme, y_paltforme])
+
+                x_paltforme += 70 # Décale de la hauteur de la sprite platforme 
+            y_paltforme += 70 # Décale de la largeur de la sprite platforme
+            x_paltforme = 0 # Remets xp à 0   
          
         # Lecture de la platform
+        # Lecture de toutes les platformes dans le level à l'aide du fichier platforms.py
         for platform in level:
             block = platforms.Platform(platform[0]) # Nomenclature de la platforme : GRASS, STONE ...
             block.rect.x = platform[1] # Position x de la platforme
@@ -106,19 +118,33 @@ class Level_01(Level):
             block.player = self.player # Prend en compte le Player
             self.platform_list.add(block) #Ajoute ce qui a été précèdement
         
-        #_______PLATFORMES MOBILES______
-        # Ajoute comme pour la méthode précedante une platforme mobile
+        # PLATFORMES MOBILES
+        
+        # PLATFORMES HORIZONTALES
+        # Lecture d'une seule platforme mobile H à l'aide du fichier platforms.py
         block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE) # Nomenclature de la platforme : GRASS, STONE ...
-        block.rect.x = 1350 # Position x de la platforme
-        block.rect.y = 280 # Position y de la platforme
-        block.boundary_left = 1350
-        block.boundary_right = 1600
-        block.change_x = 1
+        block.rect.x = 1350 # Position initiale x de la platforme 
+        block.rect.y = 280 # Position initiale y de la platforme
+        block.boundary_left = 1350 # Jusqu'a où va le mouvement à gauche (en x)
+        block.boundary_right = 1600 # Jusqu'a où va le mouvement à droite
+        block.change_x = 1 # Changement de 
         block.player = self.player
         block.level = self
         self.platform_list.add(block)
+
+        #PLATFORMES VERTICALES
+        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE)
+        block.rect.x = 1000
+        block.rect.y = 200
+        block.boundary_top = 200
+        block.boundary_bottom = 200
+        block.change_y = 1
+        block.player = self.player
+        block.level = self
+        self.platform_list.add(block)
+
  
- 
+
 # Create platforms for the level
 class Level_02(Level):
     """ Definition for level 2. """
