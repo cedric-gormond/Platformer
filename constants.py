@@ -11,7 +11,7 @@ ORANGE  = ( 255, 126,   0)
 # Dimensions
 SCREEN_WIDTH  = 800
 SCREEN_HEIGHT = 600
+GROUND = 500
 
 # FPS
-
 FPS = 60
