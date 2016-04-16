@@ -1,4 +1,3 @@
-import pygame
  
 import constants
 import platforms
@@ -37,7 +36,7 @@ class Level():
  
         # Affiche l'arrière plan
         # On ne bouge l'arrière plan tant que les platformes n'ont pas bougées
-        screen.fill(constants.BLUE)
+        screen.fill(constants.BLACK)
         screen.blit(self.background,(self.world_shift // 3,0))
  
         # Affiche toutes les sprites (platformes) quz l'on a
@@ -67,7 +66,7 @@ class Level_01(Level):
         # Call the parent constructor
         Level.__init__(self, player)
  
-        self.background = pygame.image.load("data/background_03.png").convert()
+        self.background = pygame.image.load("data/test_bg.png").convert()
         self.background.set_colorkey(constants.WHITE)
         self.level_limit = -2500
         
@@ -75,38 +74,59 @@ class Level_01(Level):
         #______CONSTRUCTION LEVEL ______
         """ Cette partie du code construit le level
             en y ajoutant des plaformes statiques avec
-            la méthode "tiled"
+            la méthode "tiled
         """    
 
         x_paltforme = 0 # Pour le positionnement x des sprites 
         y_paltforme  = 0 # Pour le positionnement y des sprites
         
         level = [] #Niveau final vide
+        decors = []
 
         # NIVEAU 1 
         level_tiled = [
-        "                                             ",
-        "P      MR                                   P",
-        "P  PMMM                                      ",
-        "                                             ",
-        "                                             ",
-        "                                             ",
-        "                                             ",
-        "                                             ",]
+        "                                               P",
+        "P                                              P",
+        "PPPP   P   2                                   P",
+        "PPP             2P                             P",
+        "P                                              P",
+        "P                                              P",
+        "P                       PP                PPPPPP",
+        "P                                              P",
+        "PABCD     122    PP                            P",
+        "PEFGH                                          P",]
 
         # Lecture du level_P
         for row in level_tiled: 
             for col in row:
                 # Pour chaque lettre rencontrée, ajoute sa sprite correspondante:
                 if col == "P": 
-                    level.append([platforms.GRASS_LEFT, x_paltforme, y_paltforme])                
-                if col == "M":
-                    level. append([platforms.GRASS_MIDDLE, x_paltforme, y_paltforme])
-                if col == "R":
-                    level. append([platforms.GRASS_RIGHT, x_paltforme, y_paltforme])
+                    level.append([platforms.STONE_AD, x_paltforme, y_paltforme])                
+                if col == "A":
+                    level. append([platforms.STONE_BA, x_paltforme, y_paltforme])
+                if col == "B":
+                    level. append([platforms.STONE_BB, x_paltforme, y_paltforme])
+                if col == "C":
+                    level. append([platforms.STONE_BC, x_paltforme, y_paltforme])
+                if col == "D":
+                    level. append([platforms.STONE_BD, x_paltforme, y_paltforme])
+                if col == "E":
+                    level. append([platforms.STONE_CA, x_paltforme, y_paltforme])
+                if col == "F":
+                    level. append([platforms.STONE_CB, x_paltforme, y_paltforme])
+                if col == "G":
+                    level. append([platforms.STONE_CC, x_paltforme, y_paltforme])
+                if col == "H":
+                    level. append([platforms.STONE_CD, x_paltforme, y_paltforme])
+                if col == "1":
+                    level. append([platforms.PLATFORM1G, x_paltforme, y_paltforme])
+                if col == "2":
+                    level. append([platforms.PLATFORM1R, x_paltforme, y_paltforme])
+                                    
+                                              
 
-                x_paltforme += 70 # Décale de la hauteur de la sprite platforme 
-            y_paltforme += 70 # Décale de la largeur de la sprite platforme
+                x_paltforme += 61 # Décale de la hauteur de la sprite platforme 
+            y_paltforme += 61 # Décale de la largeur de la sprite platforme
             x_paltforme = 0 # Remets xp à 0   
          
         # Lecture de la platform
@@ -117,12 +137,19 @@ class Level_01(Level):
             block.rect.y = platform[2] # Position y de la platforme
             block.player = self.player # Prend en compte le Player
             self.platform_list.add(block) #Ajoute ce qui a été précèdement
-        
+
+        for decor in decors:
+            block2 = platforms.Decors(decors[0])
+            block2.rect.x = platform[1]
+            block2.rect.y = platform[2]
+            block2.player = None
+            self.platform_list.add(block2)
+            
         # PLATFORMES MOBILES
         
         # PLATFORMES HORIZONTALES
         # Lecture d'une seule platforme mobile H à l'aide du fichier platforms.py
-        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE) # Nomenclature de la platforme : GRASS, STONE ...
+        block = platforms.MovingPlatform(platforms.STONE_AD) # Nomenclature de la platforme : GRASS, STONE ...
         block.rect.x = 1350 # Position initiale x de la platforme 
         block.rect.y = 280 # Position initiale y de la platforme
         block.boundary_left = 1350 # Jusqu'a où va le mouvement à gauche (en x)
@@ -133,7 +160,8 @@ class Level_01(Level):
         self.platform_list.add(block)
 
         #PLATFORMES VERTICALES
-        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE)
+        """
+        block = platforms.MovingPlatform(platforms.STONE_PT)
         block.rect.x = 1000
         block.rect.y = 200
         block.boundary_top = 200
@@ -142,6 +170,7 @@ class Level_01(Level):
         block.player = self.player
         block.level = self
         self.platform_list.add(block)
+        """
 
  
 
@@ -193,3 +222,4 @@ class Level_02(Level):
         block.player = self.player
         block.level = self
         self.platform_list.add(block)
+
