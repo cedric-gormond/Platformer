@@ -11,21 +11,20 @@ Utiliser des attaques avec appuyant sur une touche (utilisation sprites + animat
 import pygame
 
 import constants
+import levels
 
 from platforms import MovingPlatform
 from spritesheet_functions import SpriteSheet
 
 class Player(pygame.sprite.Sprite):
-    """ This class represents the bar at the bottom that the player
-    controls. """
+    """ Cette classe représente tous les paramètres du joueur (personnage)"""
 
-    # -- Attributes
-    # Set speed vector of player
+    # -- Attributs --
+    # Initialise les vecteurs mouvements
     change_x = 0
     change_y = 0
 
-    # This holds all the images for the animated walk left/right
-    # of our player
+    # Créer les listes contenant les images/sprites caractéristiques aux mouvements
     walking_frames_l = []
     walking_frames_r = []
     standing_frame = []
@@ -33,15 +32,15 @@ class Player(pygame.sprite.Sprite):
     jumping_frame = []
     jumping_frame_l = []
 
-    # What direction is the player facing?
-    direction = "R"
+    # Direction initiale du joueur
+    direction = "S"
 
-    # List of sprites we can bump against
+    # Level
     level = None
 
-    # -- Methods
+    # -- Méthodes --
     def __init__(self):
-        """ Constructor function """
+        """ Fonction initial (constructeur) """
 
         # Call the parent's constructor
         pygame.sprite.Sprite.__init__(self)
@@ -177,21 +176,25 @@ class Player(pygame.sprite.Sprite):
         if self.change_y == 0:
             self.change_y = 1
         else:
-            self.change_y += .70
+            self.change_y += .75
 
         # See if we are on the ground.
+        """
+        A corriger de nombreux problèmes de conditions"""
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
             self.change_y = 0
             self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
-            if self.direction == "J":
+            
+            if self.direction == "J" and self.change_x != 0:
                 self.direction = "R"
-            elif self.direction == "J_L":
-                self.direction = "L"      
-            """ a modifier"""
-            elif self.direction == "J" and self.change_x == 0:
+            elif self.direction == "J_L" and self.change_x != 0:
+                self.direction = "L"
+              
+            if self.direction == "J": #a modifier
                 self.direction = "S"
-            elif self.direction == "J_L" and self.change_x == 0:
-                self.direction = "S_L"        
+            elif self.direction == "J_L":
+                self.direction = "S_L"
+        
     def jump(self):
         """ Called when user hits 'jump' button. """
 
@@ -229,13 +232,16 @@ class Player(pygame.sprite.Sprite):
             self.direction = "S"
         elif self.direction == "L" or self.direction == "J_L":
             self.direction = "S_L"
-class Shooting(object):
-    """Class pour les tirs comportant tous"""
+            
+#Construire la fonction shoot
+class Fireball(object):
+    """Construire"""
 
     tir_x = 0
     tir_y = 0
 
     shooting_frames = []
+    explosion_frames = []
 
     def __init__(self):
 
@@ -243,7 +249,5 @@ class Shooting(object):
 
         sprite_sheet = SpriteSheet("data/tir.png")
 
-        
-        
-
-
+        image = sprite_sheet.get_image(0,0,135,135)
+        self.standing_frame.append(image)
