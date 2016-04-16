@@ -32,7 +32,7 @@ def main():
     screen = pygame.display.set_mode(size)
 
     #Titre de la fenetre
-    pygame.display.set_caption("Platformer prototype")
+    pygame.display.set_caption("noexit v2.1")
 
     # Créer le joueur en important le fichier (voir importations)
     player = Player()
@@ -48,7 +48,7 @@ def main():
     active_sprite_list = pygame.sprite.Group()
     player.level = current_level
 
-    player.rect.x = 340
+    player.rect.x = 120
     player.rect.y = 400
     #player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
     active_sprite_list.add(player)
@@ -82,8 +82,8 @@ def main():
                     player.go_right()
                 if event.key == pygame.K_UP:
                     player.jump()
-                if event.key == pygame.K_DOWN:
-                    player.stop()
+                #if event.key == pygame.K_DOWN:
+                    #player.stop()
                 if event.key == pygame.K_SPACE: #Tir
                     player.shoot()
                         
@@ -115,7 +115,17 @@ def main():
             diff = 350 - player.rect.x #(constants.SCREEN_WIDTH/2)
             player.rect.x = 350 #mileu de l'écran
             current_level.shift_world(diff)
+        """
+        if player.rect.y >= 100:
+            diff = 100 - player.rect.y
+            player.rect.y = 100
+            current_level.shift_world(+diff)
 
+        if player.rect.y <= 0:
+            diff = 100 - player.rect.y #(constants.SCREEN_WIDTH/2)
+            player.rect.y = 100 #mileu de l'écran
+            current_level.shift_world(diff)    
+        """
         # If the player gets to the end of the level, go to the next level
         #mettre un mur, fin etc
         current_position = player.rect.x + current_level.world_shift
