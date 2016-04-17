@@ -1,7 +1,6 @@
 """
 Ce fichier gère toutes les fonctions et la gestion des images du personnage.
 A CORRIGER:
-Bug des sprites au niveau des sauts
 Utiliser des sprites plus petites
 
 A FAIRE:
@@ -162,6 +161,14 @@ class Player(pygame.sprite.Sprite):
             # Reset our position based on the top/bottom of the object.
             if self.change_y > 0:
                 self.rect.bottom = block.rect.top
+                if self.direction == "J" and self.change_x != 0:
+                    self.direction = "R"
+                elif self.direction == "J_L" and self.change_x != 0:
+                    self.direction = "L"
+                elif self.direction == "J":
+                    self.direction = "S"
+                elif self.direction == "J_L":
+                    self.direction = "S_L"
             elif self.change_y < 0:
                 self.rect.top = block.rect.bottom
 
@@ -176,21 +183,21 @@ class Player(pygame.sprite.Sprite):
         if self.change_y == 0:
             self.change_y = 1
         else:
-            self.change_y += .75
+            self.change_y += .70
 
         # See if we are on the ground.
-        """
-        A corriger de nombreux problèmes de conditions"""
+       
+       
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
             self.change_y = 0
             self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
-            
+
             if self.direction == "J" and self.change_x != 0:
                 self.direction = "R"
             elif self.direction == "J_L" and self.change_x != 0:
                 self.direction = "L"
               
-            if self.direction == "J": #a modifier
+            if self.direction == "J": 
                 self.direction = "S"
             elif self.direction == "J_L":
                 self.direction = "S_L"
@@ -218,20 +225,26 @@ class Player(pygame.sprite.Sprite):
     def go_left(self):
         """ Called when the user hits the left arrow. """
         self.change_x = -12
-        self.direction = "L"
-
+        if self.direction != "J" and self.direction != "J_L" and self.change_y == 0: #s'il n'est pas en train de sauter
+            self.direction = "L"
+        if self.direction == "J": #si il est en saut il change de direction de saut
+            self.direction = "J_L"
     def go_right(self):
         """ Called when the user hits the right arrow. """
         self.change_x = 12
-        self.direction = "R"
+        if self.direction != "J" and self.direction != "J_L" and self.change_y == 0:
+            self.direction = "R"
+        if self.direction == "J_L": 
+            self.direction = "J"
 
     def stop(self):
         """ Called when the user lets off the keyboard. """
         self.change_x = 0
-        if self.direction == "R" or self.direction == "J":
-            self.direction = "S"
-        elif self.direction == "L" or self.direction == "J_L":
-            self.direction = "S_L"
+        if self.change_y == 0: #rajouté pour qu'il ne soit pas en image d'arrêt quand il retombe
+            if self.direction == "R" or self.direction == "J":
+                self.direction = "S"
+            elif self.direction == "L" or self.direction == "J_L":
+                self.direction = "S_L"
             
 #Construire la fonction shoot
 class Fireball(object):
