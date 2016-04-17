@@ -1,3 +1,4 @@
+import pygame
  
 import constants
 import platforms
@@ -20,6 +21,7 @@ class Level():
  
         # How far this world has been scrolled left/right
         self.world_shift = 0
+        self.world_shift_y = 0
         self.level_limit = -1000
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
@@ -55,7 +57,18 @@ class Level():
  
         for enemy in self.enemy_list:
             enemy.rect.x += shift_x
- 
+
+    def shift_world_y(self, shift_y):
+        """Scroll quand on monte vers le haut et vers le bas"""
+
+        self.world_shift_y += shift_y
+
+        for platform in self.platform_list:
+            platform.rect.y += shift_y
+
+        for enemy in self.enemy_list:
+            enemy.rect.y += shift_y
+
 # Create platforms for the level
 class Level_01(Level):
     """ Definition for level 1. """
@@ -87,14 +100,14 @@ class Level_01(Level):
         level_tiled = [
         "                                               P",
         "P                                              P",
-        "PPPP   P   2                                   P",
-        "PPP             2P                             P",
+        "PPPP   P   2      2                            P",
+        "PPP                                            P",
         "P                                              P",
         "P                                              P",
-        "P                       PP                PPPPPP",
+        "P                                         PPPPPP",
         "P                                              P",
-        "PABCD     122    PP                            P",
-        "PEFGH                                          P",]
+        "PABCD     122    PP       ABCD                 P",
+        "PEFGH                     EFGH                 P",]
 
         # Lecture du level_P
         for row in level_tiled: 
@@ -149,12 +162,12 @@ class Level_01(Level):
         
         # PLATFORMES HORIZONTALES
         # Lecture d'une seule platforme mobile H à l'aide du fichier platforms.py
-        block = platforms.MovingPlatform(platforms.STONE_AD) # Nomenclature de la platforme : GRASS, STONE ...
-        block.rect.x = 1350 # Position initiale x de la platforme 
-        block.rect.y = 280 # Position initiale y de la platforme
-        block.boundary_left = 1350 # Jusqu'a où va le mouvement à gauche (en x)
-        block.boundary_right = 1600 # Jusqu'a où va le mouvement à droite
-        block.change_x = 1 # Changement de 
+        block = platforms.MovingPlatform(platforms.PLATFORM1R) # Nomenclature de la platforme : GRASS, STONE ...
+        block.rect.x            = 1830 # Position initiale x de la platforme #1350
+        block.rect.y            = 488 # Position initiale y de la platforme #280
+        block.boundary_left     = 1830 # Jusqu'a où va le mouvement à gauche (en x) #1350
+        block.boundary_right    = 1900 # Jusqu'a où va le mouvement à droite #1600
+        block.change_x          = 1 # Changement
         block.player = self.player
         block.level = self
         self.platform_list.add(block)
@@ -222,4 +235,3 @@ class Level_02(Level):
         block.player = self.player
         block.level = self
         self.platform_list.add(block)
-
