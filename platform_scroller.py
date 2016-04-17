@@ -1,157 +1,237 @@
-"""
-FICHIER : MAIN
-PROJET : "A coup d'pelle !" 
-NOMS :TADDEI Louis, FRANCOIS Zoé, GORMOND Cédric
-
-Ce fichier est le 'coeur' principal du programme. Pour lancer le jeu, il faut executer ce fichier.
-
-DESCRIPTION DU FICHIER:
-Importation de plusieurs fichiers.py
-Comporte une fonction main() qui contient toutes les initialisations et la boucle
-permettant de faire tourner le jeu. Cette boucle ressence toutes les commandes entrées
-et par l'utilisateur. Tout au long de la boucle, on fait appel à plusieurs fichier et 
-à plusieurs fonctions propres au module pygame.
-
-https://www.youtube.com/watch?v=Delfzyyeu80&index=48&list=PLDV1Zeh2NRsB1l23YFY137LtPcstXKyuQ
-
-// Essais avec un controller XBOX360
-
-"""
-#Importation des modules
 import pygame
+ 
 import constants
-import levels
-from player import Player # importation du fichier plyer en tant que Player
+import platforms
+ 
+class Level():
+    """ Cette super class definie tout le level et comporte deux 
+        classes filles définissant chaque level """
+ 
+    def __init__(self, player):
+        """ Constructor. Pass in a handle to player. Needed for when moving platforms
+            collide with the player. """
+ 
+        # Lists of sprites used in all levels. Add or remove
+        # lists as needed for your game.
+        self.platform_list = None
+        self.enemy_list = None
+ 
+        # Image arrière plan
+        self.background = None
+ 
+        # How far this world has been scrolled left/right
+        self.world_shift = 0
+        self.world_shift_y = 0
+        self.level_limit = -1000
+        self.platform_list = pygame.sprite.Group()
+        self.enemy_list = pygame.sprite.Group()
+        self.player = player
+ 
+    # Update tout dans le level
+    def update(self):
+        """ Update tout """
+        self.platform_list.update()
+        self.enemy_list.update()
+ 
+    def draw(self, screen):
+        """ Affiche tout du level """
+ 
+        # Affiche l'arrière plan
+        # On ne bouge l'arrière plan tant que les platformes n'ont pas bougées
+        screen.fill(constants.BLACK)
+        screen.blit(self.background,(self.world_shift // 3,0))
+ 
+        # Affiche toutes les sprites (platformes) quz l'on a
+        self.platform_list.draw(screen)
+        self.enemy_list.draw(screen)
+ 
+    def shift_world(self, shift_x):
+        """ When the user moves left/right and we need to scroll everything: """
+ 
+        # Keep track of the shift amount
+        self.world_shift += shift_x
+ 
+        # Go through all the sprite lists and shift
+        for platform in self.platform_list:
+            platform.rect.x += shift_x
+ 
+        for enemy in self.enemy_list:
+            enemy.rect.x += shift_x
 
-def main():
-    """ Main Program """
-    pygame.init()
+    def shift_world_y(self, shift_y):
+        """Scroll quand on monte vers le haut et vers le bas"""
 
-    #Défini les dimensions
-    size = [constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT] #[nom_du_fichier.VARIABLE]
-    screen = pygame.display.set_mode(size)
+        self.world_shift_y += shift_y
 
-    #Titre de la fenetre
-    pygame.display.set_caption("noexit v2.1")
+        for platform in self.platform_list:
+            platform.rect.y += shift_y
 
-    # Créer le joueur en important le fichier (voir importations)
-    player = Player()
+        for enemy in self.enemy_list:
+            enemy.rect.y += shift_y
 
-    # Créer les niveaux (listes)
-    level_list = []
-    level_list.append(levels.Level_01(player))
+# Create platforms for the level
+class Level_01(Level):
+    """ Definition for level 1. """
+ 
+    def __init__(self, player):
+        """ Create level 1. """
+ 
+        # Call the parent constructor
+        Level.__init__(self, player)
+ 
+        self.background = pygame.image.load("data/test_bg.png").convert()
+        self.background.set_colorkey(constants.WHITE)
+        self.level_limit = -2500
+        
+        
+        #______CONSTRUCTION LEVEL ______
+        """ Cette partie du code construit le level
+            en y ajoutant des plaformes statiques avec
+            la méthode "tiled
+        """    
 
-    # Met en player le niveau actuel
-    current_level_no = 0
-    current_level = level_list[current_level_no]
+        x_paltforme = 0 # Pour le positionnement x des sprites 
+        y_paltforme  = 0 # Pour le positionnement y des sprites
+        
+        level = [] #Niveau final vide
+        decors = []
 
-    active_sprite_list = pygame.sprite.Group()
-    player.level = current_level
+        # NIVEAU 1 
+        level_tiled = [
+        "                                               P",
+        "P                                              P",
+        "PPPP   P   2      2                            P",
+        "PPP                                            P",
+        "P                                              P",
+        "P                                              P",
+        "P                                         PPPPPP",
+        "P                                              P",
+        "PABCD     122    PP       ABCD                 P",
+        "PEFGH                     EFGH                 P",]
 
-    player.rect.x = 120
-    player.rect.y = 400
-    #player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
-    active_sprite_list.add(player)
+        # Lecture du level_P
+        for row in level_tiled: 
+            for col in row:
+                # Pour chaque lettre rencontrée, ajoute sa sprite correspondante:
+                if col == "P": 
+                    level.append([platforms.STONE_AD, x_paltforme, y_paltforme])                
+                if col == "A":
+                    level. append([platforms.STONE_BA, x_paltforme, y_paltforme])
+                if col == "B":
+                    level. append([platforms.STONE_BB, x_paltforme, y_paltforme])
+                if col == "C":
+                    level. append([platforms.STONE_BC, x_paltforme, y_paltforme])
+                if col == "D":
+                    level. append([platforms.STONE_BD, x_paltforme, y_paltforme])
+                if col == "E":
+                    level. append([platforms.STONE_CA, x_paltforme, y_paltforme])
+                if col == "F":
+                    level. append([platforms.STONE_CB, x_paltforme, y_paltforme])
+                if col == "G":
+                    level. append([platforms.STONE_CC, x_paltforme, y_paltforme])
+                if col == "H":
+                    level. append([platforms.STONE_CD, x_paltforme, y_paltforme])
+                if col == "1":
+                    level. append([platforms.PLATFORM1G, x_paltforme, y_paltforme])
+                if col == "2":
+                    level. append([platforms.PLATFORM1R, x_paltforme, y_paltforme])
+                                    
+                                              
 
-    #Relais permettant le maintien de la boucle tant que la variable est False
-    gameExit = False
+                x_paltforme += 61 # Décale de la hauteur de la sprite platforme 
+            y_paltforme += 61 # Décale de la largeur de la sprite platforme
+            x_paltforme = 0 # Remets xp à 0   
+         
+        # Lecture de la platform
+        # Lecture de toutes les platformes dans le level à l'aide du fichier platforms.py
+        for platform in level:
+            block = platforms.Platform(platform[0]) # Nomenclature de la platforme : GRASS, STONE ...
+            block.rect.x = platform[1] # Position x de la platforme
+            block.rect.y = platform[2] # Position y de la platforme
+            block.player = self.player # Prend en compte le Player
+            self.platform_list.add(block) #Ajoute ce qui a été précèdement
 
-    #
-    entities = pygame.sprite.Group()
+        for decor in decors:
+            block2 = platforms.Decors(decors[0])
+            block2.rect.x = platform[1]
+            block2.rect.y = platform[2]
+            block2.player = None
+            self.platform_list.add(block2)
+            
+        # PLATFORMES MOBILES
+        
+        # PLATFORMES HORIZONTALES
+        # Lecture d'une seule platforme mobile H à l'aide du fichier platforms.py
+        block = platforms.MovingPlatform(platforms.PLATFORM1R) # Nomenclature de la platforme : GRASS, STONE ...
+        block.rect.x            = 1830 # Position initiale x de la platforme #1350
+        block.rect.y            = 488 # Position initiale y de la platforme #280
+        block.boundary_left     = 1830 # Jusqu'a où va le mouvement à gauche (en x) #1350
+        block.boundary_right    = 1900 # Jusqu'a où va le mouvement à droite #1600
+        block.change_x          = 1 # Changement
+        block.player = self.player
+        block.level = self
+        self.platform_list.add(block)
 
-    #
-    platforms = []
-
-    # Temps du raffraichissement de l'écran (voir FPS)
-    clock = pygame.time.Clock()
-
-    # -------- Programme : MAIN LOOP -----------
-    #Main    
-    while not gameExit:
-        for event in pygame.event.get(): # Quand l'utilisation fait quelque chose
-            if event.type == pygame.QUIT: # Si il clique sur 'Fermer'
-                gameExit = True # La variable relais prends la valeur True et permet la sortie
-
-            #Quand l'utilisateur appuie sur une touche
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE: # Touche echap
-                    gameExit = True
-                if event.key == pygame.K_LEFT:
-                    player.go_left()
-                if event.key == pygame.K_RIGHT:
-                    player.go_right()
-                if event.key == pygame.K_UP:
-                    player.jump()
-                #if event.key == pygame.K_DOWN:
-                    #player.stop()
-                if event.key == pygame.K_SPACE: #Tir
-                    player.shoot()
-                        
-
-            #Quand l'utilisateur relâche la touche
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    player.stop()
-                if event.key == pygame.K_RIGHT:
-                    player.stop()
-                #elif event.key == pygame.K_UP and event.key == pygame.K_RIGHT and event.key == pygame.K_LEFT:
-                    #player.stop()
-                        
-
-        # Update le joueur
-        active_sprite_list.update()
-
-        # Affiche tous les items du niveau
-        current_level.update()
-
-        # Mvt caméra si le joueur va à droite (ici nul)
-        if player.rect.x >= 0: #car on veut aucun décallage (sinon on met 500)
-            diff = player.rect.x - 350 # on peut mettre (constants.SCREEN_WIDTH/2)
-            player.rect.x = 350 # milieu de l'écran
-            current_level.shift_world(-diff)
-
-        # Mvt caméra si le joueur va à gauche (ici nul)
-        if player.rect.x <= 0:
-            diff = 350 - player.rect.x #(constants.SCREEN_WIDTH/2)
-            player.rect.x = 350 #mileu de l'écran
-            current_level.shift_world(diff)
+        #PLATFORMES VERTICALES
         """
-        if player.rect.y >= 100:
-            diff = 100 - player.rect.y
-            player.rect.y = 100
-            current_level.shift_world(+diff)
-
-        if player.rect.y <= 0:
-            diff = 100 - player.rect.y #(constants.SCREEN_WIDTH/2)
-            player.rect.y = 100 #mileu de l'écran
-            current_level.shift_world(diff)    
+        block = platforms.MovingPlatform(platforms.STONE_PT)
+        block.rect.x = 1000
+        block.rect.y = 200
+        block.boundary_top = 200
+        block.boundary_bottom = 200
+        block.change_y = 1
+        block.player = self.player
+        block.level = self
+        self.platform_list.add(block)
         """
-        # If the player gets to the end of the level, go to the next level
-        #mettre un mur, fin etc
-        current_position = player.rect.x + current_level.world_shift
-        if current_position < current_level.level_limit:
-            player.rect.x = 120
-            if current_level_no < len(level_list)-1:
-                current_level_no += 1
-                current_level = level_list[current_level_no]
-                player.level = current_level
 
-        # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
-        current_level.draw(screen)
-        active_sprite_list.draw(screen)
+ 
 
-        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
-
-        # FPS : limités à 60
-        FPS = constants.FPS
-        clock.tick(FPS)
-
-        # Update pygame de tout se qu'on a écrit 
-        pygame.display.flip()
-
-    # Sortie du programme
-    pygame.quit()
-
-#Lancer la boucle main()
-if __name__ == "__main__":
-    main()
+# Create platforms for the level
+class Level_02(Level):
+    """ Definition for level 2. """
+ 
+    def __init__(self, player):
+        """ Create level 1. """
+ 
+        # Call the parent constructor
+        Level.__init__(self, player)
+ 
+        self.background = pygame.image.load("/data/background_02.png").convert()
+        self.background.set_colorkey(constants.WHITE)
+        self.level_limit = -1000
+ 
+        # Array with type of platform, and x, y location of the platform.
+        level = [ [platforms.STONE_PLATFORM_LEFT, 500, 550],
+                  [platforms.STONE_PLATFORM_MIDDLE, 570, 550],
+                  [platforms.STONE_PLATFORM_RIGHT, 640, 550],
+                  [platforms.GRASS_LEFT, 800, 400],
+                  [platforms.GRASS_MIDDLE, 870, 400],
+                  [platforms.GRASS_RIGHT, 940, 400],
+                  [platforms.GRASS_LEFT, 1000, 500],
+                  [platforms.GRASS_MIDDLE, 1070, 500],
+                  [platforms.GRASS_RIGHT, 1140, 500],
+                  [platforms.STONE_PLATFORM_LEFT, 1120, 280],
+                  [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
+                  [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
+                  ]
+ 
+ 
+        # Go through the array above and add platforms
+        for platform in level:
+            block = platforms.Platform(platform[0])
+            block.rect.x = platform[1]
+            block.rect.y = platform[2]
+            block.player = self.player
+            self.platform_list.add(block)
+ 
+        # Add a custom moving platform
+        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE)
+        block.rect.x = 1500
+        block.rect.y = 300
+        block.boundary_top = 100
+        block.boundary_bottom = 550
+        block.change_y = -1
+        block.player = self.player
+        block.level = self
+        self.platform_list.add(block)
