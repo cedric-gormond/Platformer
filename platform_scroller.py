@@ -50,9 +50,14 @@ def main():
 
     player.rect.x = 120
     player.rect.y = 400
+    
+    enemies.rect.x = 500
+    enemies.rect.y = 550
+    
     #player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
     active_sprite_list.add(player)
-
+    active_sprite_list.add(enemies)
+    
     #Relais permettant le maintien de la boucle tant que la variable est False
     gameExit = False
 
@@ -62,6 +67,9 @@ def main():
     #
     platforms = []
 
+    #
+    #tween_diff = 1
+    
     # Temps du raffraichissement de l'écran (voir FPS)
     clock = pygame.time.Clock()
 
@@ -100,7 +108,7 @@ def main():
 
         # Update le joueur
         active_sprite_list.update()
-
+        enemies.update()
         # Affiche tous les items du niveau
         current_level.update()
 
@@ -109,13 +117,15 @@ def main():
             diff = player.rect.x - 350 # on peut mettre (constants.SCREEN_WIDTH/2)
             player.rect.x = 350 # milieu de l'écran
             current_level.shift_world(-diff)
-
+            # enemies.rect.x += (int(-tween_diff))
+            
         # Mvt caméra si le joueur va à gauche (ici nul)
         if player.rect.x <= 0:
             diff = 350 - player.rect.x #(constants.SCREEN_WIDTH/2)
             player.rect.x = 350 #mileu de l'écran
             current_level.shift_world(diff)
-        
+            # enemies.rect.x += (int(-tween_diff))
+            
         if player.rect.y < 200:
             diff = player.rect.y - 350
             player.rect.y = 350 
