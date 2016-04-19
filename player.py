@@ -2,10 +2,8 @@
 Ce fichier gère toutes les fonctions et la gestion des images du personnage.
 A CORRIGER:
 Utiliser des sprites plus petites
-
 A FAIRE:
 Utiliser des attaques avec appuyant sur une touche (utilisation sprites + animation) 
-
 """
 import pygame
 
@@ -14,6 +12,9 @@ import levels
 
 from platforms import MovingPlatform
 from spritesheet_functions import SpriteSheet
+
+
+
 
 class Player(pygame.sprite.Sprite):
     """ Cette classe représente tous les paramètres du joueur (personnage)"""
@@ -224,14 +225,14 @@ class Player(pygame.sprite.Sprite):
     # Player-controlled movement:
     def go_left(self):
         """ Called when the user hits the left arrow. """
-        self.change_x = -12
+        self.change_x = -10
         if self.direction != "J" and self.direction != "J_L" and self.change_y == 0: #s'il n'est pas en train de sauter
             self.direction = "L"
         if self.direction == "J": #si il est en saut il change de direction de saut
             self.direction = "J_L"
     def go_right(self):
         """ Called when the user hits the right arrow. """
-        self.change_x = 12
+        self.change_x = 10
         if self.direction != "J" and self.direction != "J_L" and self.change_y == 0:
             self.direction = "R"
         if self.direction == "J_L": 
@@ -245,22 +246,54 @@ class Player(pygame.sprite.Sprite):
                 self.direction = "S"
             elif self.direction == "L" or self.direction == "J_L":
                 self.direction = "S_L"
+    def gameover(self):
+        Option()
+"""        
+class Option:
+
+    hovered = False
+    
+    def __init__(self, text, pos):
+        self.text = text
+        self.pos = pos
+        self.set_rect()
+        self.draw()
             
-#Construire la fonction shoot
-class Fireball(object):
-    """Construire"""
+    def draw(self):
+        self.set_rend()
+        screen.blit(self.rend, self.rect)
+        
+    def set_rend(self):
+        self.rend = menu_font.render(self.text, True, self.get_color())
+        
+    def get_color(self):
+        if self.hovered:
+            return (121, 28, 248)
+        else:
+            return (150, 131, 236)
+        
+    def set_rect(self):
+        self.set_rend()
+        self.rect = self.rend.get_rect()
+        self.rect.topleft = self.pos
 
-    tir_x = 0
-    tir_y = 0
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
 
-    shooting_frames = []
-    explosion_frames = []
-
-    def __init__(self):
-
-        pygame.sprite.Sprite.__init__(self)
-
-        sprite_sheet = SpriteSheet("data/tir.png")
-
-        image = sprite_sheet.get_image(0,0,135,135)
-        self.standing_frame.append(image)
+menu_font = pygame.font.Font(None, 50)
+options = [Option("Rejouer", (350, 250)), Option("Ragequit", (350, 350))]
+while True:
+    pygame.event.pump()
+    background = pygame.image.load("data/fond.png").convert()
+    screen.blit(background,(0,0))
+    for option in options:
+        if option.rect.collidepoint(pygame.mouse.get_pos()):
+            option.hovered = True
+            for event in pygame.event.get():
+                if event.type == pygame.mouse.get_pressed():
+                     main()
+        else:
+            option.hovered = False
+        option.draw()
+    pygame.display.update()
+"""
