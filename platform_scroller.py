@@ -5,19 +5,11 @@ NOMS :TADDEI Louis, FRANCOIS Zoé, GORMOND Cédric
 
 Ce fichier est le 'coeur' principal du programme. Pour lancer le jeu, il faut executer ce fichier.
 
-DESCRIPTION DU FICHIER:
-Importation de plusieurs fichiers.py
-Comporte une fonction main() qui contient toutes les initialisations et la boucle
-permettant de faire tourner le jeu. Cette boucle ressence toutes les commandes entrées
-et par l'utilisateur. Tout au long de la boucle, on fait appel à plusieurs fichier et 
-à plusieurs fonctions propres au module pygame.
-
-https://www.youtube.com/watch?v=Delfzyyeu80&index=48&list=PLDV1Zeh2NRsB1l23YFY137LtPcstXKyuQ
-
 // Essais avec un controller XBOX360
 
 """
 #Importation des modules
+import sys
 import pygame
 import constants
 import levels
@@ -37,6 +29,13 @@ def main():
     # Créer le joueur en important le fichier (voir importations)
     player = Player()
 
+    # Police
+    font = pygame.font.SysFont("calibri",48)
+
+    # Musique
+    #pygame.mixer.music.load("data/sound/ambience.mp3")
+    #pygame.mixer.music.play(-1)
+
     # Créer les niveaux (listes)
     level_list = []
     level_list.append(levels.Level_01(player))
@@ -50,28 +49,16 @@ def main():
 
     player.rect.x = 120
     player.rect.y = 400
-    
-    enemies.rect.x = 500
-    enemies.rect.y = 550
-    
-    #player.rect.y = constants.SCREEN_HEIGHT - player.rect.height
     active_sprite_list.add(player)
-    active_sprite_list.add(enemies)
-    
+
     #Relais permettant le maintien de la boucle tant que la variable est False
     gameExit = False
 
-    #
-    entities = pygame.sprite.Group()
-
-    #
-    platforms = []
-
-    #
-    #tween_diff = 1
-    
     # Temps du raffraichissement de l'écran (voir FPS)
     clock = pygame.time.Clock()
+
+    score_text = font.render("Score: ", True, constants.WHITE)
+    screen.blit(score_text, (5,5))
 
     # -------- Programme : MAIN LOOP -----------
     #Main    
@@ -90,8 +77,8 @@ def main():
                     player.go_right()
                 if event.key == pygame.K_UP:
                     player.jump()
-                #if event.key == pygame.K_DOWN:
-                    #player.stop()
+                if event.key == pygame.K_DOWN:
+                    player.dead()
                 if event.key == pygame.K_SPACE: #Tir
                     player.shoot()
                         
@@ -108,7 +95,7 @@ def main():
 
         # Update le joueur
         active_sprite_list.update()
-        enemies.update()
+
         # Affiche tous les items du niveau
         current_level.update()
 
@@ -117,15 +104,13 @@ def main():
             diff = player.rect.x - 350 # on peut mettre (constants.SCREEN_WIDTH/2)
             player.rect.x = 350 # milieu de l'écran
             current_level.shift_world(-diff)
-            # enemies.rect.x += (int(-tween_diff))
-            
+
         # Mvt caméra si le joueur va à gauche (ici nul)
         if player.rect.x <= 0:
             diff = 350 - player.rect.x #(constants.SCREEN_WIDTH/2)
             player.rect.x = 350 #mileu de l'écran
             current_level.shift_world(diff)
-            # enemies.rect.x += (int(-tween_diff))
-            
+        
         if player.rect.y < 200:
             diff = player.rect.y - 350
             player.rect.y = 350 
@@ -135,23 +120,12 @@ def main():
             diff = 350 - player.rect.y   #(constants.SCREEN_WIDTH/2)
             player.rect.y = 350 #mileu de l'écran
             current_level.shift_world_y(diff)
-        """
-        if player.rect.y == 600:
-            diff = player.rect.y   #(constants.SCREEN_WIDTH/2)
-            player.rect.y = 350 #mileu de l'écran
-            current_level.shift_world_y(-diff)        
-        """
-        
-        # If the player gets to the end of the level, go to the next level
-        #mettre un mur, fin etc
-        current_position = player.rect.x + current_level.world_shift
-        if current_position < current_level.level_limit:
-            player.rect.x = 120
-            if current_level_no < len(level_list)-1:
-                current_level_no += 1
-                current_level = level_list[current_level_no]
-                player.level = current_level
+             
 
+        # If the player gets to the end of the level, go to the next level
+        #mettre un mur, fin e
+        #score
+        
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
         current_level.draw(screen)
         active_sprite_list.draw(screen)
@@ -168,6 +142,52 @@ def main():
     # Sortie du programme
     pygame.quit()
 
+class Option:
+
+    hovered = False
+    
+    def __init__(self, text, pos):
+        self.text = text
+        self.pos = pos
+        self.set_rect()
+        self.draw()
+            
+    def draw(self):
+        self.set_rend()
+        screen.blit(self.rend, self.rect)
+        
+    def set_rend(self):
+        self.rend = menu_font.render(self.text, True, self.get_color())
+        
+    def get_color(self):
+        if self.hovered:
+            return (255, 255, 255)
+        else:
+            return (100, 100, 100)
+        
+    def set_rect(self):
+        self.set_rend()
+        self.rect = self.rend.get_rect()
+        self.rect.topleft = self.pos
+
+pygame.init()
+background = pygame.image.load("data/test_bg.png")
+screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+menu_font = pygame.font.Font(None, 40)
+options = [Option("JOUER", (constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2)), 
+           Option("QUITTER", (constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2 + 100))]
+while True:
+    pygame.event.pump()
+    screen.blit(background, (0, 0))
+    for option in options:
+        if option.rect.collidepoint(pygame.mouse.get_pos()):
+            option.hovered = True
+            main()
+        else:
+            option.hovered = False
+        option.draw()
+    pygame.display.update()
+
 #Lancer la boucle main()
 if __name__ == "__main__":
-    main()
+    Option()
