@@ -9,13 +9,10 @@ import pygame
 
 import constants
 import levels
-
+from levels import Level_01
 from platforms import MovingPlatform
 from spritesheet_functions import SpriteSheet
-
-
-
-
+import main_menu as Option
 class Player(pygame.sprite.Sprite):
     """ Cette classe représente tous les paramètres du joueur (personnage)"""
 
@@ -151,7 +148,7 @@ class Player(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
-
+ 
         # Move up/down
         self.rect.y += self.change_y
 
@@ -203,6 +200,8 @@ class Player(pygame.sprite.Sprite):
             elif self.direction == "J_L":
                 self.direction = "S_L"
         
+       
+
     def jump(self):
         """ Called when user hits 'jump' button. """
 
@@ -225,14 +224,14 @@ class Player(pygame.sprite.Sprite):
     # Player-controlled movement:
     def go_left(self):
         """ Called when the user hits the left arrow. """
-        self.change_x = -10
+        self.change_x = -12
         if self.direction != "J" and self.direction != "J_L" and self.change_y == 0: #s'il n'est pas en train de sauter
             self.direction = "L"
         if self.direction == "J": #si il est en saut il change de direction de saut
             self.direction = "J_L"
     def go_right(self):
         """ Called when the user hits the right arrow. """
-        self.change_x = 10
+        self.change_x = 12
         if self.direction != "J" and self.direction != "J_L" and self.change_y == 0:
             self.direction = "R"
         if self.direction == "J_L": 
@@ -246,54 +245,4 @@ class Player(pygame.sprite.Sprite):
                 self.direction = "S"
             elif self.direction == "L" or self.direction == "J_L":
                 self.direction = "S_L"
-    def gameover(self):
-        Option()
-"""        
-class Option:
-
-    hovered = False
-    
-    def __init__(self, text, pos):
-        self.text = text
-        self.pos = pos
-        self.set_rect()
-        self.draw()
-            
-    def draw(self):
-        self.set_rend()
-        screen.blit(self.rend, self.rect)
-        
-    def set_rend(self):
-        self.rend = menu_font.render(self.text, True, self.get_color())
-        
-    def get_color(self):
-        if self.hovered:
-            return (121, 28, 248)
-        else:
-            return (150, 131, 236)
-        
-    def set_rect(self):
-        self.set_rend()
-        self.rect = self.rend.get_rect()
-        self.rect.topleft = self.pos
-
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
-
-menu_font = pygame.font.Font(None, 50)
-options = [Option("Rejouer", (350, 250)), Option("Ragequit", (350, 350))]
-while True:
-    pygame.event.pump()
-    background = pygame.image.load("data/fond.png").convert()
-    screen.blit(background,(0,0))
-    for option in options:
-        if option.rect.collidepoint(pygame.mouse.get_pos()):
-            option.hovered = True
-            for event in pygame.event.get():
-                if event.type == pygame.mouse.get_pressed():
-                     main()
-        else:
-            option.hovered = False
-        option.draw()
-    pygame.display.update()
-"""
+     
