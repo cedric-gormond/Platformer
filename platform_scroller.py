@@ -13,6 +13,7 @@ import sys
 import pygame
 import constants
 import levels
+import main_menu as Option
 from player import Player # importation du fichier plyer en tant que Player
 
 def main():
@@ -47,8 +48,8 @@ def main():
     active_sprite_list = pygame.sprite.Group()
     player.level = current_level
 
-    player.rect.x = 120
-    player.rect.y = 400
+    player.rect.x = 220 #220
+    player.rect.y = 500 #500
     active_sprite_list.add(player)
 
     #Relais permettant le maintien de la boucle tant que la variable est False
@@ -59,6 +60,10 @@ def main():
 
     score_text = font.render("Score: ", True, constants.WHITE)
     screen.blit(score_text, (5,5))
+
+    #Musique d'ambience
+    pygame.mixer.music.load("data/sound/ambience.wav")
+    pygame.mixer.music.play(-1)
 
     # -------- Programme : MAIN LOOP -----------
     #Main    
@@ -76,11 +81,11 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     player.go_right()
                 if event.key == pygame.K_UP:
+                    #pygame.mixer.music.load("data/sound/jump1.wav")
+                    #pygame.mixer.music.play(1)
                     player.jump()
                 if event.key == pygame.K_DOWN:
-                    player.dead()
-                if event.key == pygame.K_SPACE: #Tir
-                    player.shoot()
+                    Option
                         
 
             #Quand l'utilisateur relâche la touche
@@ -89,8 +94,7 @@ def main():
                     player.stop()
                 if event.key == pygame.K_RIGHT:
                     player.stop()
-                #elif event.key == pygame.K_UP and event.key == pygame.K_RIGHT and event.key == pygame.K_LEFT:
-                    #player.stop()
+                
                         
 
         # Update le joueur
@@ -100,13 +104,13 @@ def main():
         current_level.update()
 
         # Mvt caméra si le joueur va à droite (ici nul)
-        if player.rect.x >= 0: #car on veut aucun décallage (sinon on met 500)
+        if player.rect.x > 0: #car on veut aucun décallage (sinon on met 500)
             diff = player.rect.x - 350 # on peut mettre (constants.SCREEN_WIDTH/2)
             player.rect.x = 350 # milieu de l'écran
             current_level.shift_world(-diff)
 
         # Mvt caméra si le joueur va à gauche (ici nul)
-        if player.rect.x <= 0:
+        if player.rect.x < 0:
             diff = 350 - player.rect.x #(constants.SCREEN_WIDTH/2)
             player.rect.x = 350 #mileu de l'écran
             current_level.shift_world(diff)
@@ -119,9 +123,11 @@ def main():
         if player.rect.y > 200:
             diff = 350 - player.rect.y   #(constants.SCREEN_WIDTH/2)
             player.rect.y = 350 #mileu de l'écran
-            current_level.shift_world_y(diff)
-             
-
+            current_level.shift_world_y(diff)    
+        
+        if player.rect.x == 600:
+            player.rect.x = 100
+            player.rect.y = 100
         # If the player gets to the end of the level, go to the next level
         #mettre un mur, fin e
         #score
@@ -142,51 +148,7 @@ def main():
     # Sortie du programme
     pygame.quit()
 
-class Option:
 
-    hovered = False
-    
-    def __init__(self, text, pos):
-        self.text = text
-        self.pos = pos
-        self.set_rect()
-        self.draw()
-            
-    def draw(self):
-        self.set_rend()
-        screen.blit(self.rend, self.rect)
-        
-    def set_rend(self):
-        self.rend = menu_font.render(self.text, True, self.get_color())
-        
-    def get_color(self):
-        if self.hovered:
-            return (255, 255, 255)
-        else:
-            return (100, 100, 100)
-        
-    def set_rect(self):
-        self.set_rend()
-        self.rect = self.rend.get_rect()
-        self.rect.topleft = self.pos
-
-pygame.init()
-background = pygame.image.load("data/test_bg.png")
-screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
-menu_font = pygame.font.Font(None, 40)
-options = [Option("JOUER", (constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2)), 
-           Option("QUITTER", (constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2 + 100))]
-while True:
-    pygame.event.pump()
-    screen.blit(background, (0, 0))
-    for option in options:
-        if option.rect.collidepoint(pygame.mouse.get_pos()):
-            option.hovered = True
-            main()
-        else:
-            option.hovered = False
-        option.draw()
-    pygame.display.update()
 
 #Lancer la boucle main()
 if __name__ == "__main__":
