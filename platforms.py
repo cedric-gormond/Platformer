@@ -13,35 +13,21 @@ from spritesheet_functions import SpriteSheet
 #   HAuteur de la sprite
  
 
-STONE_AD = (0, 183, 61, 61)
-STONE_BA = (0, 183, 61, 61)
-STONE_BB = (61, 183, 61, 61)
-STONE_BC = (122, 183, 61, 61)
-STONE_BD = (183, 183, 61, 61)
-STONE_CA = (0, 244, 61, 61)
-STONE_CB = (61, 244, 61, 61)
-STONE_CC = (122, 244, 61, 61)
-STONE_CD = (183, 244, 61, 61)
-PLATFORM1G = (366, 0, 61, 61)
-PLATFORM1R = (427, 0, 61, 61)
-D1 = (0, 122, 61, 61)
-class Decors(pygame.sprite.Sprite):
-     
-    def __init__(self, sprite_sheet_data):
-        """ Platform constructor. Assumes constructed with user passing in
-            an array of 5 numbers like what's defined at the top of this
-            code. """
-        super().__init__()
- 
-        sprite_sheet = SpriteSheet("data/tiles_spritesheet_pt.png")
-        # Grab the image for this platform
-        self.image = sprite_sheet.get_image(sprite_sheet_data[0],
-                                            sprite_sheet_data[1],
-                                            sprite_sheet_data[2],
-                                            sprite_sheet_data[3])
-
+STONE_AD    = (0, 183, 61, 61)
+STONE_BA    = (0, 183, 61, 61)
+STONE_BB    = (61, 183, 61, 61)
+STONE_BC    = (122, 183, 61, 61)
+STONE_BD    = (183, 183, 61, 61)
+STONE_CA    = (0, 244, 61, 61)
+STONE_CB    = (61, 244, 61, 61)
+STONE_CC    = (122, 244, 61, 61)
+STONE_CD    = (183, 244, 61, 61)
+PLATFORM1G  = (366, 0, 61, 61)
+PLATFORM1R  = (427, 0, 61, 61)
+D1          = (0, 122, 61, 61)
+LAVE        = (246, 61, 61, 61)
                                             
-    """ Platform the user can jump on """
+""" Platform the user can jump on """
     
 class Platform(pygame.sprite.Sprite):
     """ Platform the user can jump on """
@@ -130,4 +116,3 @@ class MovingPlatform(Platform):
         cur_pos = self.rect.x - self.level.world_shift
         if cur_pos < self.boundary_left or cur_pos > self.boundary_right:
             self.change_x *= -1
-
