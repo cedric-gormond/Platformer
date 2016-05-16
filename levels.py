@@ -9,14 +9,13 @@ class Level():
         """ Constructor. Pass in a handle to player. Needed for when moving platforms
             collide with the player. """
  
-        # Lists of sprites used in all levels. Add or remove
-        # lists as needed for your game.
+        # Liste les sprite dans tout le niveau
         self.platform_list = None
  
         # Image arrière plan
         self.background = None
  
-        # How far this world has been scrolled left/right
+        # Initialisation des variables
         self.world_shift = 0
         self.world_shift_y = 0
         self.level_limit = -1000
@@ -43,10 +42,10 @@ class Level():
     def shift_world(self, shift_x):
         """ When the user moves left/right and we need to scroll everything: """
  
-        # Keep track of the shift amount
+        # Prends en compte le décalage
         self.world_shift += shift_x
  
-        # Go through all the sprite lists and shift
+        # Parcour toutes les platformes et les décales en fonction du mouvement
         for platform in self.platform_list:
             platform.rect.x += shift_x
 
@@ -58,14 +57,14 @@ class Level():
         for platform in self.platform_list:
             platform.rect.y += shift_y
 
-# Create platforms for the level
+# Creation des platformes dans le niveau 1
 class Level_01(Level):
     """ Definition for level 1. """
  
     def __init__(self, player):
         """ Create level 1. """
  
-        # Call the parent constructor
+        # Appelle le parent constructeur
         Level.__init__(self, player)
  
         self.background = pygame.image.load("data/bg.png").convert()
@@ -74,7 +73,7 @@ class Level_01(Level):
         #______CONSTRUCTION LEVEL ______
         """ Cette partie du code construit le level
             en y ajoutant des plaformes statiques avec
-            la méthode "tiled
+            la méthode "tiled"
         """    
 
         x_paltforme = 0 # Pour le positionnement x des sprites 
@@ -161,31 +160,33 @@ class Level_01(Level):
             self.platform_list.add(block) #Ajoute ce qui a été précèdement
 
         #Pics : 
+        #1
         block = platforms.Pic1(platforms.PICS)
-        block.rect.x = 3478 # Position x de la platforme
-        block.rect.y = 367 # Position y de la platforme
+        block.rect.x = 3478 # Position x du pic
+        block.rect.y = 367 # Position y du pic
         block.player = self.player # Prend en compte le Player
         block.level             = self
         self.platform_list.add(block)
-
+        
+        #2
         block = platforms.Pic2(platforms.PICS)
-        block.rect.x = 4150 # Position x de la platforme
-        block.rect.y = 367 # Position y de la platforme
+        block.rect.x = 4150 # Position x du pic
+        block.rect.y = 367 # Position y du pic
         block.player = self.player # Prend en compte le Player
         block.level  = self
         self.platform_list.add(block)
-
+        #3
         block = platforms.Pic3(platforms.PICS)
-        block.rect.x = 1342 # Position x de la platforme
-        block.rect.y = 1342 # Position y de la platforme
+        block.rect.x = 1342 # Position x du pic
+        block.rect.y = 1342 # Position y du pic
         block.player = self.player # Prend en compte le Player
         block.level  = self
         self.platform_list.add(block)
 
         #Pudi: 
         block = platforms.Pudi1(platforms.PUDI)
-        block.rect.x = 5047 # Position x de la platforme
-        block.rect.y = 360 # Position y de la platforme
+        block.rect.x = 5047 # Position x de la sprite
+        block.rect.y = 360 # Position y de la sprite
         block.player = self.player # Prend en compte le Player
         block.level  = self
         self.platform_list.add(block)
