@@ -215,9 +215,6 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         """ Called when user hits 'jump' button. """
 
-        # move down a bit and see if there is a platform below us.
-        # Move down 2 pixels because it doesn't work well if we only move down 1
-        # when working with a platform moving down.
         if self.direction == "R" or self.direction == "S" or self.direction == "J":
             self.direction = "J"  
         else:
