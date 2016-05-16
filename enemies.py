@@ -21,12 +21,12 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         """ Fonction initial (constructeur) """
 
-        # Call the parent's constructor
+        # Appelle le constructeur
         pygame.sprite.Sprite.__init__(self)
 
         sprite_sheet = SpriteSheet("data/ennemi4.png")
 
-        # Load all the right facing images, then flip them
+        # Charge toutes les images à droite
         image = sprite_sheet.get_image(0, 0, 40, 36)
         image = pygame.transform.flip(image, True, False)
         self.walking_frames_l.append(image)
@@ -40,28 +40,26 @@ class Enemy(pygame.sprite.Sprite):
         image = pygame.transform.flip(image, True, False)
         self.walking_frames_l.append(image)
 
-        # Set the image the Enemy starts with
+        # Choisi avec quelle image on commence
         self.image = self.walking_frames_l[0]
  
-        # Reference the image rect.
+        # Deplacement image
         self.rect = self.image.get_rect()
-        #self.rect.bottomleft = loc
         self.change_x = -5
             
     def update(self):
-        # Gravity
+        # Setup la gravité
         self.calc_grav()
 
-        # Left/Right Movement adjusted for world shift
+        # Mouvement ajusté pour le décalage de l'environnement
         self.rect.x += self.change_x
-        pos = self.rect.x #+ self.level.world_shift
+        pos = self.rect.x 
         if self.direction == "L":
-            #if self.level.world_shift > 0:
             self.change_x = -5
             frame = (pos // 40) % len(self.walking_frames_l)
             self.image = self.walking_frames_l[frame]
         
-    # Gravity
+    # Gravité
     def calc_grav(self):
         
         if self.change_y == 0:
@@ -69,7 +67,7 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.change_y += .35
  
-        # See if we are on the ground.
+        #Si on est au sol
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
             self.change_y = 0
             self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
