@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         """ Fonction initial (constructeur) """
 
-        # Call the parent's constructor
+        # Appelle le parent constructeur 
         pygame.sprite.Sprite.__init__(self)
 
         sprite_sheet = SpriteSheet("data/decoupage_orange.png")
@@ -100,10 +100,10 @@ class Player(pygame.sprite.Sprite):
         image = pygame.transform.flip(image, True, False)
         self.jumping_frame_l.append(image)
 
-        # Set the image the player starts with
+        # Defini l'image avec laquelle on démarre
         self.image = self.standing_frame[0]
 
-        # Set a referance to the image rect.
+        # reference à image rect
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -141,7 +141,7 @@ class Player(pygame.sprite.Sprite):
             self.image = self.walking_frames_l[frame]
         
 
-        # See if we hit anything
+        # Si on touche quelque chose
         block_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
         for block in block_hit_list:
             # If we are moving right,
@@ -175,7 +175,7 @@ class Player(pygame.sprite.Sprite):
                     self.direction = "S_L"
             elif self.change_y < 0:
                  self.rect.top = block.rect.bottom
-             # Stop our vertical movement
+             # Arrte notre mouvement vertical
             self.change_y = 0
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
@@ -195,7 +195,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.change_y += .70
 
-        # See if we are on the ground.
+        # Vois si nous sommes au sol
        
        
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
@@ -226,11 +226,12 @@ class Player(pygame.sprite.Sprite):
         platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
         self.rect.y -= 3
 
-        # If it is ok to jump, set our speed upwards
+        # Si on peut sauter, defini notre vitesse vers la haut
         if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
             self.change_y = -13
 
-    # Player-controlled movement:
+    # Fonctions qui permettent le mouvement:
+    #Lien avec platform_scroller
     def go_left(self):
         """ Called when the user hits the left arrow. """
         self.change_x = -10
